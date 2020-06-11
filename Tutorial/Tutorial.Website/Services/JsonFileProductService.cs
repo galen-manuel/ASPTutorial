@@ -34,31 +34,38 @@ namespace Tutorial.Website.Services
                 });
         }
 
-        public void AddRating(string productId, int rating)
+        public void AddRating(string productId, int newRating)
         {
-            var products = GetProducts();
+            IEnumerable<Product> products = GetProducts();
 
-            if (products.First(x => x.Id == productId).Ratings == null)
+            // Grab the first product that matches the id passed in
+            Product query = products.First(x => x.Id == productId);
+
+            // TODO Handle unknown product
+
+            // Create ratings if none exist
+            if (query.Ratings == null)
             {
-                products.First(x => x.Id == productId).Ratings = new int[] { rating };
+                query.Ratings = new int[] { newRating };
             }
             else
             {
-                var ratings = products.First(x => x.Id == productId).Ratings.ToList();
-                ratings.Add(rating);
-                products.First(x => x.Id == productId).Ratings = ratings.ToArray();
+                List<int> ratings = query.Ratings.ToList();
+                ratings.Add(newRating);
+                query.Ratings = ratings.ToArray();
             }
 
             using (var outputStream = File.OpenWrite(JsonFileName))
             {
-                JsonSerializer.Serialize<IEnumerable<Product>>(
-                    new Utf8JsonWriter(outputStream, new JsonWriterOptions
-                    {
-                        SkipValidation = true,
-                        Indented = true
-                    }),
-                    products
-                );
+                JsonSerializer.Serialize
+                    (
+                        new Utf8JsonWriter(outputStream, new JsonWriterOptions
+                        {
+                            SkipValidation = true,
+                            Indented = true
+                        }),
+                        products
+                    );
             }
         }
     }

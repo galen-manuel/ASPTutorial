@@ -1,13 +1,16 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Tutorial.Website.Models;
 using Tutorial.Website.Services;
 
 namespace Tutorial.Website
@@ -24,7 +27,10 @@ namespace Tutorial.Website
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            // Transient is a class that is created when it's needed. You get a new instance each time the service is requested.
             services.AddTransient<JsonFileProductService>();
+            // This is needed to use ProductControllers
+            services.AddControllers();
             services.AddRazorPages();
         }
 
@@ -52,6 +58,7 @@ namespace Tutorial.Website
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapRazorPages();
+                endpoints.MapControllers();
             });
         }
     }
